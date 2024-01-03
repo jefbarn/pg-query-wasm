@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build/dts",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "main.ts"
+  ]
+}
