@@ -1,11 +1,14 @@
-import createModule from '../build/pg-query-wasm.js'
+import { ParseResult } from './build/pg_query.js'
+import createModule from './build/pg-query-wasm.js'
 
 export class PgQueryError extends Error {
-  /**
-   * @param mod
-   * @param errorPtr {number}
-   */
-  constructor(mod, errorPtr) {
+  funcname: string
+  filename: string
+  lineno: number
+  cursorpos: number
+  context: string
+
+  constructor(mod: any, errorPtr: number) {
     super()
 
     this.message = mod.UTF8ToString(mod.getValue(errorPtr, '*'))
@@ -17,18 +20,7 @@ export class PgQueryError extends Error {
   }
 }
 
-try {
-  console.dir(await parse('SELECT 1;'), { depth: null })
-  console.dir(await parse('SELECT THIS DOESNT WORK;'), { depth: null })
-} catch (err) {
-  console.error(err)
-}
-
-/**
- * @param query {string}
- * @returns {Promise<ParseResult>}
- */
-export async function parse(query) {
+export async function parse(query: string): Promise<ParseResult> {
   const mod = await createModule()
 
   const resultPtr = mod._malloc(12)
@@ -41,8 +33,7 @@ export async function parse(query) {
   const parseTree = JSON.parse(mod.UTF8ToString(parseTreePtr))
   const stderrBuf = mod.UTF8ToString(stderrBufPtr)
 
-  console.log({ parseTreePtr, stderrBufPtr, errorPtr })
-  let error
+  let error: PgQueryError
   if (errorPtr) {
     error = new PgQueryError(mod, errorPtr)
   }

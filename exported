@@ -1,0 +1,10 @@
+_malloc
+_free
+_pg_query_parse
+_pg_query_free_parse_result
+_pg_query_normalize
+_pg_query_free_normalize_result
+_pg_query_parse_plpgsql
+_pg_query_free_plpgsql_parse_result
+_pg_query_fingerprint
+_pg_query_free_fingerprint_result

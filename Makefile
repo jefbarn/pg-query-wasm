@@ -1,5 +1,6 @@
 LIB_PG_QUERY_TAG = 16-5.0.0
 
+ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 BUILD_DIR = ./build
 LIB_DIR = $(BUILD_DIR)/libpg_query
 DIST_DIR = ./dist
@@ -36,23 +37,20 @@ $(LIB): | $(LIB_DIR)
 .PHONY: wasm
 wasm: $(WASM)
 $(WASM): $(LIB)
-#		-s INCOMING_MODULE_JS_API=print,printErr,noInitialRun
 	emcc \
 		-o $@ \
 		-Wall \
-		-O2 -flto \
-		-lembind \
-		--pre-js module.js \
-		-s EXPORT_ES6 \
-		-s MODULARIZE \
-		-s SINGLE_FILE \
-		-s ENVIRONMENT=web \
-		-s EXPORT_NAME=createModule \
-		-s EXPORTED_FUNCTIONS=_malloc,_free,_pg_query_parse,_pg_query_free_parse_result \
-		-s EXPORTED_RUNTIME_METHODS=ALLOC_NORMAL,intArrayFromString,allocate,ccall,UTF8ToString,getValue,setValue \
+		-Oz -flto \
+		-sEXPORT_ES6 \
+		-sMODULARIZE \
+		-sSINGLE_FILE \
+		-sENVIRONMENT=web \
+		-sEXPORT_NAME=createModule \
+		-sINCOMING_MODULE_JS_API=[] \
+		-sEXPORTED_FUNCTIONS=@$(ROOT_DIR)exported \
+		-sEXPORTED_RUNTIME_METHODS=ccall,UTF8ToString,getValue \
 		-I $(LIB_DIR) -I $(LIB_DIR)/vendor \
-		$(LIB) entry.cpp
-	#gzip -k -9 $(BUILD_DIR)/pg-query-wasm.wasm
+		$(LIB)
 
 .PHONY: proto
 proto: $(PROTO_TS)
@@ -72,7 +70,7 @@ $(TSC_DTS): $(PROTO_TS)
 $(DIST_DTS): $(TSC_DTS)
 	api-extractor run
 
-$(DIST_JS): $(WASM)
+$(DIST_JS): $(WASM) index.ts build.js
 	node build.js
 
 .PHONY: dist
