@@ -45,13 +45,14 @@ $(WASM): $(LIB)
 		--pre-js module.js \
 		-s EXPORT_ES6 \
 		-s MODULARIZE \
+		-s SINGLE_FILE \
 		-s ENVIRONMENT=web \
 		-s EXPORT_NAME=createModule \
 		-s EXPORTED_FUNCTIONS=_malloc,_free \
 		-s EXPORTED_RUNTIME_METHODS=ALLOC_NORMAL,intArrayFromString,allocate \
 		-I $(LIB_DIR) -I $(LIB_DIR)/vendor \
 		$(LIB) entry.cpp
-	gzip -k -9 $(BUILD_DIR)/pg-query-wasm.wasm
+	#gzip -k -9 $(BUILD_DIR)/pg-query-wasm.wasm
 
 .PHONY: proto
 proto: $(PROTO_TS)
