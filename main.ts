@@ -16,5 +16,16 @@ export interface ParseUnion {
 
 export async function parse(query: string) {
   const mod = await createModule()
-  return mod.parse(query) as ParseUnion
+
+  const pointer = mod._malloc(100)
+
+  mod.ccall('pg_query_parse', null, ['number', 'string'], [pointer, query])
+
+  const resultPtr = mod.getValue(pointer, '*')
+  const result = JSON.parse(mod.UTF8ToString(resultPtr))
+  console.log('result: ', { pointer, resultPtr })
+  console.dir(result, { depth: null })
+
+  mod.ccall('pg_query_free_parse_result', null, ['number'], [pointer])
+  mod._free(pointer)
 }

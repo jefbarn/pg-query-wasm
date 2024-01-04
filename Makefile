@@ -40,7 +40,7 @@ $(WASM): $(LIB)
 	emcc \
 		-o $@ \
 		-Wall \
-		-Oz -flto \
+		-O2 -flto \
 		-lembind \
 		--pre-js module.js \
 		-s EXPORT_ES6 \
@@ -48,8 +48,8 @@ $(WASM): $(LIB)
 		-s SINGLE_FILE \
 		-s ENVIRONMENT=web \
 		-s EXPORT_NAME=createModule \
-		-s EXPORTED_FUNCTIONS=_malloc,_free \
-		-s EXPORTED_RUNTIME_METHODS=ALLOC_NORMAL,intArrayFromString,allocate \
+		-s EXPORTED_FUNCTIONS=_malloc,_free,_pg_query_parse,_pg_query_free_parse_result \
+		-s EXPORTED_RUNTIME_METHODS=ALLOC_NORMAL,intArrayFromString,allocate,ccall,UTF8ToString,getValue,setValue \
 		-I $(LIB_DIR) -I $(LIB_DIR)/vendor \
 		$(LIB) entry.cpp
 	#gzip -k -9 $(BUILD_DIR)/pg-query-wasm.wasm
