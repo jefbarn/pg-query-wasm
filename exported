@@ -2,6 +2,8 @@ _malloc
 _free
 _pg_query_parse
 _pg_query_free_parse_result
+_pg_query_parse_protobuf
+_pg_query_free_protobuf_parse_result
 _pg_query_normalize
 _pg_query_free_normalize_result
 _pg_query_parse_plpgsql
